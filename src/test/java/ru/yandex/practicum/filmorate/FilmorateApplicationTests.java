@@ -67,7 +67,7 @@ public class FilmorateApplicationTests {
 				.name("Движение вверх")
 				.description("Фильм о баскетболе")
 				.releaseDate(LocalDate.of(2015, 10, 12))
-				.duration(Duration.ofMinutes(120))
+				.duration(Duration.ofSeconds(8500))
 				.build();
 		filmJson1 = objectMapper.writeValueAsString(film1);
 
@@ -76,7 +76,7 @@ public class FilmorateApplicationTests {
 				.name("Интерстеллар")
 				.description("Фильм про космос")
 				.releaseDate(LocalDate.of(2012, 3, 19))
-				.duration(Duration.ofMinutes(180))
+				.duration(Duration.ofMinutes(9200))
 				.build();
 		filmJson2 = objectMapper.writeValueAsString(film2);
 	}
@@ -337,7 +337,7 @@ public class FilmorateApplicationTests {
 				.andExpect(status().isBadRequest()));
 
 		film1.setReleaseDate(LocalDate.of(1900, 1, 1));
-		film1.setDuration(Duration.ofMinutes(-10));
+		film1.setDuration(Duration.ofSeconds(-600));
 		String badJson4 = objectMapper.writeValueAsString(film1);
 		assertThrows(ServletException.class, () -> mockMvc.perform(post("/films")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -383,7 +383,7 @@ public class FilmorateApplicationTests {
 				.name("Новое движение вверх")
 				.description("Новый фильм о баскетболе")
 				.releaseDate(LocalDate.of(2024, 1, 2))
-				.duration(Duration.ofMinutes(60))
+				.duration(Duration.ofSeconds(7200))
 				.build();
 		String filmJson3 = objectMapper.writeValueAsString(film3);
 
@@ -392,7 +392,7 @@ public class FilmorateApplicationTests {
 				.name("Новое движение вверх")
 				.description("Новый фильм о баскетболе")
 				.releaseDate(LocalDate.of(2024, 1, 2))
-				.duration(Duration.ofMinutes(60))
+				.duration(Duration.ofSeconds(7200))
 				.build();
 
 		mockMvc.perform(put("/films")
@@ -437,7 +437,7 @@ public class FilmorateApplicationTests {
 				.andExpect(status().isBadRequest()));
 
 		film3.setReleaseDate(LocalDate.of(1900, 1, 2));
-		film3.setDuration(Duration.ofMinutes(-60));
+		film3.setDuration(Duration.ofSeconds(-60));
 		String badJson4 = objectMapper.writeValueAsString(film3);
 		assertThrows(ServletException.class, () -> mockMvc.perform(put("/films")
 						.contentType(MediaType.APPLICATION_JSON)
