@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final static Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(FilmController.class);
+    private static final Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(FilmController.class);
 
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -60,29 +60,48 @@ public class FilmController {
         }
 
         Film oldFilm = films.get(film.getId());
+        Film buildFilm = Film.builder()
+                .id(oldFilm.getId())
+                .name(oldFilm.getName())
+                .description(oldFilm.getDescription())
+                .releaseDate(oldFilm.getReleaseDate())
+                .duration(oldFilm.getDuration())
+                .build();
+
         if (film.getName() != null && !film.getName().isEmpty()) {
-            oldFilm.setName(film.getName());
+            buildFilm.setName(film.getName());
             log.debug("Установлено новое имя: {}", oldFilm.getName());
         }
 
-        if (film.getDescription() != null && !film.getDescription().isEmpty() &&
-                film.getDescription().length() <= 200) {
-            oldFilm.setDescription(film.getDescription());
+        if (film.getDescription() != null && !film.getDescription().isEmpty()) {
+            if (film.getDescription().length() > 200) {
+                log.error("Максимальная длина описания - 200 символов");
+                throw new ValidationException("Максимальная длина описания - 200 символов");
+            }
+            buildFilm.setDescription(film.getDescription());
             log.debug("Установлено новое описание: {}", oldFilm.getDescription());
         }
 
-        if (film.getReleaseDate() != null &&
-                film.getReleaseDate().isAfter(LocalDate.of(1895, 12, 27))) {
-            oldFilm.setReleaseDate(film.getReleaseDate());
+        if (film.getReleaseDate() != null) {
+            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 27))) {
+                log.error("Дата релиза должна быть не раньше 28 декабря 1895 года");
+                throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
+            }
+            buildFilm.setReleaseDate(film.getReleaseDate());
             log.debug("Установлена новая дата релиза: {}", oldFilm.getReleaseDate());
         }
 
-        if (film.getDuration() != null && !film.getDuration().isNegative()) {
-            oldFilm.setDuration(film.getDuration());
+        if (film.getDuration() != null) {
+            if (film.getDuration().isNegative()) {
+                log.error("Продолжительность фильма должна быть положительным числом");
+                throw new ValidationException("Продолжительность фильма должна быть положительным числом");
+            }
+            buildFilm.setDuration(film.getDuration());
             log.debug("Установлена новая длительность фильма: {}", oldFilm.getDuration());
         }
 
-        return oldFilm;
+        films.put(buildFilm.getId(), buildFilm);
+        return buildFilm;
     }
 
     private Long nextFilmId() {

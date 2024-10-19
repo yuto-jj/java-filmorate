@@ -13,7 +13,7 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final static Logger log = (Logger) LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = (Logger) LoggerFactory.getLogger(UserController.class);
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emails = new HashSet<>();
 
@@ -65,29 +65,58 @@ public class UserController {
         }
 
         User oldUser = users.get(user.getId());
-        if (user.getEmail() != null && !user.getEmail().isEmpty() && user.getEmail().contains("@") &&
-                !emails.contains(user.getEmail())) {
-            oldUser.setEmail(user.getEmail());
-            log.debug("Установлен новый емейл: {}", oldUser.getEmail());
+        User buildUser = User.builder()
+                .id(oldUser.getId())
+                .name(oldUser.getName())
+                .email(oldUser.getEmail())
+                .login(oldUser.getLogin())
+                .birthday(oldUser.getBirthday())
+                .build();
+
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            if (!user.getEmail().contains("@") || emails.contains(user.getEmail())) {
+                log.error("Электронная почта должна содержать символ @, " +
+                        "либо пользователь с таким емейл уже существует");
+                throw new ValidationException("Электронная почта должна содержать символ @, " +
+                        "либо пользователь с таким емейл уже существует");
+            }
+            buildUser.setEmail(user.getEmail());
+            log.debug("Установлен новый емейл: {}", buildUser.getEmail());
         }
 
-        if (user.getLogin() != null && !user.getLogin().isEmpty() && !user.getLogin().contains(" ")) {
-            oldUser.setLogin(user.getLogin());
-            log.debug("Установлен новый логин: {}", oldUser.getLogin());
+        if (user.getLogin() != null && !user.getLogin().isEmpty()) {
+            if (user.getLogin().contains(" ")) {
+                log.error("Логин не может содержать пробелы");
+                throw new ValidationException("Логин не может содержать пробелы");
+            }
+            buildUser.setLogin(user.getLogin());
+            log.debug("Установлен новый логин: {}", buildUser.getLogin());
         }
 
         if (user.getName() != null && !user.getName().isEmpty()) {
-            oldUser.setName(user.getName());
-            log.debug("Установлено новое имя: {}", oldUser.getName());
+            buildUser.setName(user.getName());
+            log.debug("Установлено новое имя: {}", buildUser.getName());
         }
 
-        if (user.getBirthday() != null && user.getBirthday().isBefore(LocalDate.now())) {
-            oldUser.setBirthday(user.getBirthday());
-            log.debug("Установлена новая дата рождения: {}", oldUser.getBirthday());
+        if (user.getBirthday() != null) {
+            if (user.getBirthday().isAfter(LocalDate.now())) {
+                log.error("Дата рождения не может быть в будущем");
+                throw new ValidationException("Дата рождения не может быть в будущем");
+            }
+            buildUser.setBirthday(user.getBirthday());
+            log.debug("Установлена новая дата рождения: {}", buildUser.getBirthday());
         }
 
-        return oldUser;
+        if (!buildUser.getEmail().equals(oldUser.getEmail())) {
+            emails.remove(oldUser.getEmail());
+            emails.add(buildUser.getEmail());
+        }
+
+        users.put(buildUser.getId(), buildUser);
+        return buildUser;
     }
+
+
 
     private Long nextUserId() {
         long currentMaxId = users.keySet()
