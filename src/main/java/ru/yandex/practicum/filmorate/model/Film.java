@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 @Data
@@ -14,11 +13,11 @@ public class Film {
     private LocalDate releaseDate;
     private long durationOfMinutes;
 
-    public void setDuration(Duration duration) {
-        durationOfMinutes = duration.toMinutes();
+    public void setDuration(long durationOfMinutes) {
+        this.durationOfMinutes = durationOfMinutes;
     }
 
-    public Duration getDuration() {
-        return Duration.ofMinutes(durationOfMinutes);
+    public long getDuration() {
+        return durationOfMinutes;
     }
 }
