@@ -67,7 +67,7 @@ public class FilmorateApplicationTests {
 				.name("Движение вверх")
 				.description("Фильм о баскетболе")
 				.releaseDate(LocalDate.of(2015, 10, 12))
-				.duration(Duration.ofSeconds(8500))
+				.durationOfMinutes(120)
 				.build();
 		filmJson1 = objectMapper.writeValueAsString(film1);
 
@@ -76,7 +76,7 @@ public class FilmorateApplicationTests {
 				.name("Интерстеллар")
 				.description("Фильм про космос")
 				.releaseDate(LocalDate.of(2012, 3, 19))
-				.duration(Duration.ofMinutes(9200))
+				.durationOfMinutes(180)
 				.build();
 		filmJson2 = objectMapper.writeValueAsString(film2);
 	}
@@ -293,7 +293,7 @@ public class FilmorateApplicationTests {
 				.andExpect(jsonPath("$.name").value(film1.getName()))
 				.andExpect(jsonPath("$.description").value(film1.getDescription()))
 				.andExpect(jsonPath("$.releaseDate").value(film1.getReleaseDate().toString()))
-				.andExpect(jsonPath("$.duration").value(film1.getDuration().toString()));
+				.andExpect(jsonPath("$.durationOfMinutes").value(film1.getDuration().toMinutes()));
 
 		mockMvc.perform(post("/films")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -304,7 +304,7 @@ public class FilmorateApplicationTests {
 				.andExpect(jsonPath("$.name").value(film2.getName()))
 				.andExpect(jsonPath("$.description").value(film2.getDescription()))
 				.andExpect(jsonPath("$.releaseDate").value(film2.getReleaseDate().toString()))
-				.andExpect(jsonPath("$.duration").value(film2.getDuration().toString()));
+				.andExpect(jsonPath("$.durationOfMinutes").value(film2.getDuration().toMinutes()));
 
 		film1.setName("");
 		String badJson1 = objectMapper.writeValueAsString(film1);
@@ -337,7 +337,7 @@ public class FilmorateApplicationTests {
 				.andExpect(status().isBadRequest()));
 
 		film1.setReleaseDate(LocalDate.of(1900, 1, 1));
-		film1.setDuration(Duration.ofSeconds(-600));
+		film1.setDuration(Duration.ofMinutes(-10));
 		String badJson4 = objectMapper.writeValueAsString(film1);
 		assertThrows(ServletException.class, () -> mockMvc.perform(post("/films")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -364,12 +364,12 @@ public class FilmorateApplicationTests {
 				.andExpect(jsonPath("$[0].name").value(film1.getName()))
 				.andExpect(jsonPath("$[0].description").value(film1.getDescription()))
 				.andExpect(jsonPath("$[0].releaseDate").value(film1.getReleaseDate().toString()))
-				.andExpect(jsonPath("$[0].duration").value(film1.getDuration().toString()))
+				.andExpect(jsonPath("$[0].durationOfMinutes").value(film1.getDuration().toMinutes()))
 				.andExpect(jsonPath("$[1].id").value(2))
 				.andExpect(jsonPath("$[1].name").value(film2.getName()))
 				.andExpect(jsonPath("$[1].description").value(film2.getDescription()))
 				.andExpect(jsonPath("$[1].releaseDate").value(film2.getReleaseDate().toString()))
-				.andExpect(jsonPath("$[1].duration").value(film2.getDuration().toString()));
+				.andExpect(jsonPath("$[1].durationOfMinutes").value(film2.getDuration().toMinutes()));
 	}
 
 	@Test
@@ -383,7 +383,7 @@ public class FilmorateApplicationTests {
 				.name("Новое движение вверх")
 				.description("Новый фильм о баскетболе")
 				.releaseDate(LocalDate.of(2024, 1, 2))
-				.duration(Duration.ofSeconds(7200))
+				.durationOfMinutes(60)
 				.build();
 		String filmJson3 = objectMapper.writeValueAsString(film3);
 
@@ -392,7 +392,7 @@ public class FilmorateApplicationTests {
 				.name("Новое движение вверх")
 				.description("Новый фильм о баскетболе")
 				.releaseDate(LocalDate.of(2024, 1, 2))
-				.duration(Duration.ofSeconds(7200))
+				.durationOfMinutes(60)
 				.build();
 
 		mockMvc.perform(put("/films")
@@ -404,7 +404,7 @@ public class FilmorateApplicationTests {
 				.andExpect(jsonPath("$.name").value(film3.getName()))
 				.andExpect(jsonPath("$.description").value(film3.getDescription()))
 				.andExpect(jsonPath("$.releaseDate").value(film3.getReleaseDate().toString()))
-				.andExpect(jsonPath("$.duration").value(film3.getDuration().toString()));
+				.andExpect(jsonPath("$.durationOfMinutes").value(film3.getDuration().toMinutes()));
 
 		film3.setId(7L);
 		String badJson1 = objectMapper.writeValueAsString(film3);
@@ -437,7 +437,7 @@ public class FilmorateApplicationTests {
 				.andExpect(status().isBadRequest()));
 
 		film3.setReleaseDate(LocalDate.of(1900, 1, 2));
-		film3.setDuration(Duration.ofSeconds(-60));
+		film3.setDuration(Duration.ofMinutes(-60));
 		String badJson4 = objectMapper.writeValueAsString(film3);
 		assertThrows(ServletException.class, () -> mockMvc.perform(put("/films")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -449,7 +449,7 @@ public class FilmorateApplicationTests {
 				.name("")
 				.description("")
 				.releaseDate(null)
-				.duration(null)
+				.durationOfMinutes(0)
 				.build();
 		String filmJson5 = objectMapper.writeValueAsString(film5);
 
@@ -462,6 +462,6 @@ public class FilmorateApplicationTests {
 				.andExpect(jsonPath("$.name").value(film4.getName()))
 				.andExpect(jsonPath("$.description").value(film4.getDescription()))
 				.andExpect(jsonPath("$.releaseDate").value(film4.getReleaseDate().toString()))
-				.andExpect(jsonPath("$.duration").value(film4.getDuration().toString()));
+				.andExpect(jsonPath("$.durationOfMinutes").value(film4.getDuration().toMinutes()));
 	}
 }

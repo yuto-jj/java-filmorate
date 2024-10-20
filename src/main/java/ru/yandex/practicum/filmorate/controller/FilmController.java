@@ -65,7 +65,7 @@ public class FilmController {
                 .name(oldFilm.getName())
                 .description(oldFilm.getDescription())
                 .releaseDate(oldFilm.getReleaseDate())
-                .duration(oldFilm.getDuration())
+                .durationOfMinutes(oldFilm.getDuration().toMinutes())
                 .build();
 
         if (film.getName() != null && !film.getName().isEmpty()) {
@@ -91,7 +91,7 @@ public class FilmController {
             log.debug("Установлена новая дата релиза: {}", oldFilm.getReleaseDate());
         }
 
-        if (film.getDuration() != null) {
+        if (film.getDuration().toMinutes() != 0) {
             if (film.getDuration().isNegative()) {
                 log.error("Продолжительность фильма должна быть положительным числом");
                 throw new ValidationException("Продолжительность фильма должна быть положительным числом");
