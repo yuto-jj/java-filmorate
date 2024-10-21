@@ -17,7 +17,7 @@ public class FilmController {
 
     private Long id = 0L;
     private final Map<Long, Film> films = new HashMap<>();
-    private static final LocalDate badDate = LocalDate.of(1895, 12, 28);
+    private static final LocalDate BAD_DATE = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> getFilms() {
@@ -61,7 +61,7 @@ public class FilmController {
             throw new ValidationException("Максимальная длина описания - 200 символов");
         }
 
-        if (film.getReleaseDate().isBefore(badDate)) {
+    if (film.getReleaseDate().isBefore(BAD_DATE)) {
             log.error("Дата релиза должна быть не раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
         }
