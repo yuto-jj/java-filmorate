@@ -1,13 +1,20 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-class FilmorateApplicationTests {
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class FilmorateApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+	@Autowired
+	protected MockMvc mockMvc;
 
+	@Autowired
+	protected ObjectMapper objectMapper;
 }
