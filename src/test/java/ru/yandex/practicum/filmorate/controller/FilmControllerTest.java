@@ -33,7 +33,7 @@ public class FilmControllerTest extends FilmorateApplicationTests {
                 .name("Движение вверх")
                 .description("Фильм о баскетболе")
                 .releaseDate(LocalDate.of(2015, 10, 12))
-                .durationOfMinutes(120)
+                .duration(120)
                 .build();
         filmJson1 = objectMapper.writeValueAsString(film1);
 
@@ -42,7 +42,7 @@ public class FilmControllerTest extends FilmorateApplicationTests {
                 .name("Интерстеллар")
                 .description("Фильм про космос")
                 .releaseDate(LocalDate.of(2012, 3, 19))
-                .durationOfMinutes(180)
+                .duration(180)
                 .build();
         filmJson2 = objectMapper.writeValueAsString(film2);
     }
@@ -148,7 +148,7 @@ public class FilmControllerTest extends FilmorateApplicationTests {
                 .name("Новое движение вверх")
                 .description("Новый фильм о баскетболе")
                 .releaseDate(LocalDate.of(2024, 1, 2))
-                .durationOfMinutes(60)
+                .duration(60)
                 .build();
         String filmJson3 = objectMapper.writeValueAsString(film3);
 
