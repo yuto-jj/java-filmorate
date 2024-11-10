@@ -64,15 +64,17 @@ public class FilmService {
     }
 
 
-    public Film addLike(Long FilmId, Long userId) {
-        Film film = addOrRemoveLikeValidate(FilmId, userId);
+    public Film addLike(Long filmId, Long userId) {
+        Film film = addOrRemoveLikeValidate(filmId, userId);
         film.addLike(userId);
+        log.debug("В фильм с айди {} добавлен лайк пользователя с айди {}", film.getId(), userId);
         return film;
     }
 
-    public Film removeLike(Long FilmId, Long userId) {
-        Film film = addOrRemoveLikeValidate(FilmId, userId);
+    public Film removeLike(Long filmId, Long userId) {
+        Film film = addOrRemoveLikeValidate(filmId, userId);
         film.removeLike(userId);
+        log.debug("Из фильма с айди {} удален лайк пользователя с айди {}", film.getId(), userId);
         return film;
     }
 
