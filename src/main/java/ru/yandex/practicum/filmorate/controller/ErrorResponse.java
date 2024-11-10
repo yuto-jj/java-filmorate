@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class ErrorResponse {
 
-    String error;
+    private String error;
 
     public ErrorResponse(String error) {
         this.error = error;

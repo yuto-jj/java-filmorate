@@ -11,7 +11,9 @@ public interface UserStorage {
 
     Set<String> getEmails();
 
-    boolean addEmail(String email);
+    void addEmail(String email);
+
+    boolean containsEmail(String email);
 
     void removeEmail(String email);
 
@@ -20,4 +22,6 @@ public interface UserStorage {
     void updateUser(User user);
 
     void removeUser(User user);
+
+    User getUser(Long id);
 }

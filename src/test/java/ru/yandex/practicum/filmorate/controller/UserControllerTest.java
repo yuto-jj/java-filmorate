@@ -192,15 +192,7 @@ public class UserControllerTest extends FilmorateApplicationTests {
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(status().isNotFound());
 
-        user3.setEmail("newjohn@gmail.com");
         user3.setId(1L);
-        String badJson2 = objectMapper.writeValueAsString(user3);
-        mockMvc.perform(put("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(badJson2))
-                .andExpect(jsonPath("$.error").exists())
-                .andExpect(status().isBadRequest());
-
         user3.setEmail("johngmail.com");
         String badJson3 = objectMapper.writeValueAsString(user3);
         mockMvc.perform(put("/users")

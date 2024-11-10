@@ -1,16 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -19,18 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class FilmService {
 
     private Long id = 0L;
     private static final LocalDate BAD_DATE = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
 
     public Collection<Film> getFilms() {
         return filmStorage.getFilms().values();
@@ -47,14 +39,9 @@ public class FilmService {
     }
 
     public Film updateFilm(@RequestBody Film film) {
-        Map<Long, Film> films = filmStorage.getFilms();
-        if (!films.containsKey(film.getId()) || films.get(film.getId()) == null) {
-            log.error("Фильм с указанным айди не найден");
-            throw new NotFoundException("Фильм с указанным айди не найден");
-        }
-
+        Film oldFilm = filmStorage.getFilm(film.getId());
         validateFilm(film);
-        Film oldFilm = films.get(film.getId());
+
         oldFilm.setName(film.getName());
         oldFilm.setDescription(film.getDescription());
         oldFilm.setReleaseDate(film.getReleaseDate());
@@ -67,14 +54,14 @@ public class FilmService {
     public Film addLike(Long filmId, Long userId) {
         Film film = addOrRemoveLikeValidate(filmId, userId);
         film.addLike(userId);
-        log.debug("В фильм с айди {} добавлен лайк пользователя с айди {}", film.getId(), userId);
+        log.debug("В фильм с айди {} добавлен лайк пользователя с айди {}", filmId, userId);
         return film;
     }
 
     public Film removeLike(Long filmId, Long userId) {
         Film film = addOrRemoveLikeValidate(filmId, userId);
         film.removeLike(userId);
-        log.debug("Из фильма с айди {} удален лайк пользователя с айди {}", film.getId(), userId);
+        log.debug("Из фильма с айди {} удален лайк пользователя с айди {}", filmId, userId);
         return film;
     }
 
@@ -111,19 +98,7 @@ public class FilmService {
     }
 
     private Film addOrRemoveLikeValidate(Long filmId, Long userId) {
-        Map<Long, Film> films = filmStorage.getFilms();
-        Map<Long, User> users = userStorage.getUsers();
-
-        if (!films.containsKey(filmId)) {
-            log.error("Фильм с айди: {} - не найден.", filmId);
-            throw new NotFoundException("Фильм с айди: " + filmId + " - не найден.");
-        }
-
-        if (!users.containsKey(userId)) {
-            log.error("Пользователь с айди: {} - не найден.", userId);
-            throw new NotFoundException("Пользователь с айди: " + userId + " - не найден.");
-        }
-
-        return films.get(filmId);
+        userStorage.getUser(userId);
+        return filmStorage.getFilm(filmId);
     }
 }

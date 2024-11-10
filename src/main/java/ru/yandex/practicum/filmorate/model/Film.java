@@ -15,8 +15,6 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    @Getter
-    @Setter
     private long duration;
     @Builder.Default
     private Set<Long> likes = new HashSet<>();
