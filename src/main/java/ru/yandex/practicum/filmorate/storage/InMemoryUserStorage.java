@@ -6,40 +6,36 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/*
 @Slf4j
 @Getter
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
+    private Long id = 0L;
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emails = new HashSet<>();
-
-    public void addEmail(String email) {
-        emails.add(email);
-    }
-
-    public void removeEmail(String email) {
-        emails.remove(email);
-    }
 
     public boolean containsEmail(String email) {
         return emails.contains(email);
     }
 
-    public void addUser(User user) {
+    public User addUser(User user) {
+        id++;
+        user.setId(id);
+        log.debug("Установлен айди пользователя: {}", user.getId());
         emails.add(user.getEmail());
         users.put(user.getId(), user);
+        return user;
     }
 
-    public void updateUser(User user) {
+    public User updateUser(User user) {
         emails.remove(users.get(user.getId()).getEmail());
         emails.add(user.getEmail());
         users.put(user.getId(), user);
+        return user;
     }
 
     public void removeUser(User user) {
@@ -54,4 +50,9 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return users.get(id);
     }
+
+    public List<User> getUsers() {
+        return new ArrayList<>(users.values());
+    }
 }
+ */

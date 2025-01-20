@@ -2,17 +2,21 @@ package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Map;
+import java.util.List;
 
 public interface FilmStorage {
 
-    Map<Long, Film> getFilms();
+    List<Film> getFilms();
 
-    void addFilm(Film film);
+    Film addFilm(Film film);
 
-    void updateFilm(Film film);
+    Film updateFilm(Film film);
 
     void deleteFilm(Film film);
 
     Film getFilm(Long id);
+
+    void addLike(Long filmId, Long userId);
+
+    void removeLike(Long filmId, Long userId);
 }

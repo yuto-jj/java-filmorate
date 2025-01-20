@@ -15,7 +15,9 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private long duration;
+    private Long duration;
+    private Mpa mpa;
+    private Set<Genre> genre;
     @Builder.Default
     private Set<Long> likes = new HashSet<>();
 
