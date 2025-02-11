@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -23,14 +25,19 @@ public class FilmController {
         return filmService.getFilms();
     }
 
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable Long id) {
+        return filmService.getFilm(id);
+    }
+
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
-        return filmService.addFilm(film);
+    public Film addFilm(@RequestBody NewFilmRequest r) {
+        return filmService.addFilm(r);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        return filmService.updateFilm(film);
+    public Film updateFilm(@RequestBody UpdateFilmRequest r) {
+        return filmService.updateFilm(r);
     }
 
     @PutMapping("/{id}/like/{userId}")

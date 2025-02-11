@@ -89,7 +89,7 @@ public class UserControllerTest extends FilmorateApplicationTests {
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson3))
-                .andExpect(jsonPath("$.error").exists())
+                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(status().isBadRequest());
 
         user1.setEmail("newjohn@gmail.com");
