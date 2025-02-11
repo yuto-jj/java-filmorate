@@ -7,11 +7,11 @@ public class Genre {
     private Integer id;
     private String name;
 
-    public Genre (Integer id) {
+    public Genre(Integer id) {
         this.id = id;
     }
 
-    public Genre (Integer id, String name) {
+    public Genre(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
