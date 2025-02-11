@@ -5,14 +5,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.BadRequestExeption;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -102,28 +101,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     private void validateMpa(Film film) {
-        if (film.getMpa() != null) {
-            try {
-                film.setMpa(mpaDbStorage.getMpa(film.getMpa().getId()));
-            } catch (NotFoundException e) {
-                throw new BadRequestExeption("Рейтинга с айди: " + film.getMpa().getId() + " не существует.");
-            }
-        }
+        film.setMpa(mpaDbStorage.getMpa(film.getMpa().getId()));
     }
 
     private void validateGenres(Film film) {
-        Integer genreId = 0;
-        if (!film.getGenres().isEmpty()) {
-            try {
-                Set<Genre> genres = new LinkedHashSet<>();
-                for (Genre genre : film.getGenres()) {
-                    genres.add(genreStorage.getGenre(genre.getId()));
-                    genreId = genre.getId();
-                }
-                film.setGenres(genres);
-            } catch (NotFoundException e) {
-                throw new BadRequestExeption("Жанра c айди: " + genreId + " не существует");
-            }
-        }
+        film.setGenres(film.getGenres().stream()
+                .map(g -> genreStorage.getGenre(g.getId())).collect(Collectors.toSet()));
     }
 }
