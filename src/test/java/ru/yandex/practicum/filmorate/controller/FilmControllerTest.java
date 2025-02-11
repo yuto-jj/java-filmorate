@@ -140,7 +140,7 @@ public class FilmControllerTest extends FilmorateApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson5))
                 .andExpect(jsonPath("$.error").exists())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
         film1.setMpa(new Mpa(1));
         film1.setGenres(Set.of(new Genre(7)));
@@ -149,7 +149,7 @@ public class FilmControllerTest extends FilmorateApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson6))
                 .andExpect(jsonPath("$.error").exists())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test

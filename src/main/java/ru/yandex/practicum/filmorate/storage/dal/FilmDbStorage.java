@@ -106,6 +106,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private void validateGenres(Film film) {
         film.setGenres(film.getGenres().stream()
-                .map(g -> genreStorage.getGenre(g.getId())).collect(Collectors.toSet()));
+                .map(g -> genreStorage.getGenre(g.getId())).collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 }
