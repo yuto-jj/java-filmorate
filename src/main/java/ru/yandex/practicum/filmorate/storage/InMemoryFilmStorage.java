@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Getter;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 
-/*
 @Slf4j
 @Getter
 @Component
