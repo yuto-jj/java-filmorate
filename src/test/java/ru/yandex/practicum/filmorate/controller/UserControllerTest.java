@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -72,40 +70,45 @@ public class UserControllerTest extends FilmorateApplicationTests {
 
         user1.setEmail("");
         String badJson1 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson1))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user1.setEmail("johngmail.com");
         String badJson2 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson2))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user1.setEmail("john@gmail.com");
         String badJson3 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson3))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user1.setEmail("newjohn@gmail.com");
         user1.setLogin("");
         String badJson4 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson4))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user1.setEmail("newjohn1@gmail.com");
         user1.setLogin("john 21");
         String badJson5 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson5))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user1.setLogin("newjohn21");
         user1.setEmail("newjohn2@gmail.com");
@@ -121,10 +124,11 @@ public class UserControllerTest extends FilmorateApplicationTests {
         user1.setEmail("newjohn3@gmail.com");
         user1.setBirthday((LocalDate.of(2040, 1, 1)));
         String badJson6 = objectMapper.writeValueAsString(user1);
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson6))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -182,41 +186,38 @@ public class UserControllerTest extends FilmorateApplicationTests {
 
         user3.setId(3L);
         String badJson1 = objectMapper.writeValueAsString(user3);
-        assertThrows(ServletException.class, () -> mockMvc.perform(put("/users")
+        mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson1))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isNotFound());
 
-        user3.setEmail("newjohn@gmail.com");
         user3.setId(1L);
-        String badJson2 = objectMapper.writeValueAsString(user3);
-        assertThrows(ServletException.class, () -> mockMvc.perform(put("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(badJson2))
-                .andExpect(status().isBadRequest()));
-
         user3.setEmail("johngmail.com");
         String badJson3 = objectMapper.writeValueAsString(user3);
-        assertThrows(ServletException.class, () -> mockMvc.perform(put("/users")
+        mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson3))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user3.setLogin("john 21");
         user3.setEmail("newjohn3@gmail.com");
         String badJson4 = objectMapper.writeValueAsString(user3);
-        assertThrows(ServletException.class, () -> mockMvc.perform(put("/users")
+        mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson4))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
 
         user3.setLogin("newjohn22");
         user3.setEmail("newjohn4@gmail.com");
         user3.setBirthday(LocalDate.of(2040, 9, 12));
         String badJson5 = objectMapper.writeValueAsString(user3);
-        assertThrows(ServletException.class, () -> mockMvc.perform(put("/users")
+        mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson5))
-                .andExpect(status().isBadRequest()));
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(status().isBadRequest());
     }
 }

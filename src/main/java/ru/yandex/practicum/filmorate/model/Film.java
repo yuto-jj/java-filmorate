@@ -1,23 +1,29 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
+@Jacksonized
 public class Film {
     private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private long durationOfMinutes;
+    private long duration;
+    @Builder.Default
+    private Set<Long> likes = new HashSet<>();
 
-    public void setDuration(long durationOfMinutes) {
-        this.durationOfMinutes = durationOfMinutes;
+    public void addLike(Long userId) {
+        likes.add(userId);
     }
 
-    public long getDuration() {
-        return durationOfMinutes;
+    public void removeLike(Long userId) {
+        likes.remove(userId);
     }
 }
