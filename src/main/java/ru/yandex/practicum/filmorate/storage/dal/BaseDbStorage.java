@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class BaseDbStorage<T> {
     }
 
     protected List<T> findMany(String query, Object... params) {
-        return jdbc.query(query, mapper, params);
+        return new LinkedList<>(jdbc.query(query, mapper, params));
     }
 
     protected Long insert(String query, Object... params) {

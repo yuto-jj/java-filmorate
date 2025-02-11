@@ -4,6 +4,15 @@ import lombok.Data;
 
 @Data
 public class Genre {
-    private Long id;
+    private Integer id;
     private String name;
+
+    public Genre (Integer id) {
+        this.id = id;
+    }
+
+    public Genre (Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

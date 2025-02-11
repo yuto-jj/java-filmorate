@@ -17,13 +17,12 @@ import java.util.Optional;
 @Primary
 public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?;";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
     private static final String FIND_BY_EMAIL_QUERY = "SELECT * FROM users WHERE email = ?";
     private static final String INSERT_QUERY = "INSERT INTO users (email, login, name, birthday) " +
             "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? " +
             "WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -41,10 +40,6 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             log.error("Пользователь с айди: {} - не найден.", userId);
             throw new NotFoundException("Пользователь с айди: " + userId + " - не найден.");
         }
-    }
-
-    public boolean containsUser(Long userId) {
-        return findOne(FIND_BY_ID_QUERY, userId).isPresent();
     }
 
     public boolean containsEmail(String email) {
@@ -69,13 +64,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
-                user.getBirthday(),
+                java.sql.Date.valueOf(user.getBirthday()),
                 user.getId()
         );
         return user;
-    }
-
-    public void removeUser(User user) {
-        delete(DELETE_QUERY, user.getId());
     }
 }

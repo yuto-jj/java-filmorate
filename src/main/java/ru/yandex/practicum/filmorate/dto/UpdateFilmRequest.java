@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class UpdateFilmRequest {
@@ -13,7 +13,7 @@ public class UpdateFilmRequest {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Long duration;
+    private Integer duration;
     private Mpa mpa;
-    private Set<Genre> genre;
+    private List<Genre> genres = new LinkedList<>();
 }

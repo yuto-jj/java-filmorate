@@ -16,7 +16,7 @@ public class MpaService {
 
     private final MpaStorage mpaStorage;
 
-    public Mpa getMpa(Long mpaId) {
+    public Mpa getMpa(Integer mpaId) {
         return mpaStorage.getMpa(mpaId);
     }
 

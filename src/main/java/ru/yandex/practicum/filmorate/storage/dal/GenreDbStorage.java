@@ -18,7 +18,7 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
     private static final String FIND_ALL_QUERY = "SELECT * FROM genres";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";
     private static final String INSERT_GENRE_QUERY = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-    private static final String DELETE_GENRE_QUERY = "DELETE FROM genres WHERE film_id = ?";
+    private static final String DELETE_GENRE_QUERY = "DELETE FROM film_genre WHERE film_id = ?";
 
     public GenreDbStorage(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper);
@@ -28,7 +28,7 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
         return findMany(FIND_ALL_QUERY);
     }
 
-    public Genre getGenre(Long genreId) {
+    public Genre getGenre(Integer genreId) {
         Optional<Genre> genre = findOne(FIND_BY_ID_QUERY, genreId);
         if (genre.isPresent()) {
             return genre.get();
@@ -39,7 +39,10 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
     }
 
     public void addFilmGenre(Set<Genre> genres, Long filmId) {
-        genres.forEach(g -> insert(INSERT_GENRE_QUERY, filmId, g.getId()));
+        for (Genre genre : genres) {
+            getGenre(genre.getId());
+            update(INSERT_GENRE_QUERY, filmId, genre.getId());
+        }
     }
 
     public void deleteFilmGenre(Long filmId) {

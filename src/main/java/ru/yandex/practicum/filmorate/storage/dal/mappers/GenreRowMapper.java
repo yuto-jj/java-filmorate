@@ -12,11 +12,8 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class GenreRowMapper implements RowMapper<Genre> {
 
-    public Genre mapRow(final ResultSet rs, final int rowNum) throws SQLException {
-        final Genre genre = new Genre();
-        genre.setId(rs.getLong("id"));
-        genre.setName(rs.getString("name"));
-        return genre;
+    public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new Genre(rs.getInt("id"), rs.getString("name"));
     }
 }
 

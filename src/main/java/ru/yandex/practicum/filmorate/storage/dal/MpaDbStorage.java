@@ -25,7 +25,7 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> implements MpaStorage {
         return findMany(FIND_ALL_QUERY);
     }
 
-    public Mpa getMpa(Long mpaId) {
+    public Mpa getMpa(Integer mpaId) {
         Optional<Mpa> mpa = findOne(FIND_BY_ID_QUERY, mpaId);
         if (mpa.isPresent()) {
             return mpa.get();

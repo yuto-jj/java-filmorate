@@ -30,6 +30,10 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
+    public Film getFilm(Long id) {
+        return filmStorage.getFilm(id);
+    }
+
     public Film addFilm(NewFilmRequest r) {
         Film film = FilmMapper.mapToFilm(r);
         validateFilm(film);

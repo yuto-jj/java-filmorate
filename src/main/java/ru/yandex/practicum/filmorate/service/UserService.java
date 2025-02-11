@@ -27,6 +27,10 @@ public class UserService {
         return userStorage.getUsers();
     }
 
+    public User getUser(Long userId) {
+        return userStorage.getUser(userId);
+    }
+
     public User createUser(NewUserRequest r) {
         User user = UserMapper.mapToUser(r);
         validate(user);
@@ -48,18 +52,19 @@ public class UserService {
 
         Matcher matcher1 = pattern.matcher(user.getEmail());
         if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().contains("@") ||
-        matcher1.find()) {
+                matcher1.find()) {
             log.error("Электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
         }
 
+        User oldUser = null;
         if (user.getId() != null) {
-            User oldUser = userStorage.getUser(user.getId());
-            if (userStorage.containsEmail(user.getEmail()) &&
-                    (oldUser == null || !oldUser.getEmail().equals(user.getEmail()))) {
-                log.error("Пользователь с таким емеил уже существует");
-                throw new ValidationException("Пользователь с таким емеил уже существует");
-            }
+            oldUser = userStorage.getUser(user.getId());
+        }
+        if (userStorage.containsEmail(user.getEmail()) &&
+                (oldUser == null || !oldUser.getEmail().equals(user.getEmail()))) {
+            log.error("Пользователь с таким емеил уже существует");
+            throw new ValidationException("Пользователь с таким емеил уже существует");
         }
 
         Matcher matcher2 = pattern.matcher(user.getLogin());

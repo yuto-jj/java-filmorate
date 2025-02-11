@@ -4,6 +4,8 @@ import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.LinkedHashSet;
+
 public class FilmMapper {
 
     public static Film mapToFilm(NewFilmRequest r) {
@@ -13,18 +15,19 @@ public class FilmMapper {
                 .releaseDate(r.getReleaseDate())
                 .duration(r.getDuration())
                 .mpa(r.getMpa())
-                .genre(r.getGenre())
+                .genres(new LinkedHashSet<>(r.getGenres()))
                 .build();
     }
 
     public static Film mapToFilm(UpdateFilmRequest r) {
         return Film.builder()
+                .id(r.getId())
                 .name(r.getName())
                 .description(r.getDescription())
                 .releaseDate(r.getReleaseDate())
                 .duration(r.getDuration())
                 .mpa(r.getMpa())
-                .genre(r.getGenre())
+                .genres(new LinkedHashSet<>(r.getGenres()))
                 .build();
     }
 }

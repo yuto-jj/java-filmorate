@@ -8,16 +8,10 @@ public class Friendship {
     @JsonIgnore
     private Long userId;
     private Long friendId;
-    private Long friendStatusId = 1L;
+    private String friendStatus;
 
     public Friendship(Long userId, Long friendId) {
         this.userId = userId;
         this.friendId = friendId;
-    }
-
-    public Friendship(Long userId, Long friendId, Long friendStatusId) {
-        this.userId = userId;
-        this.friendId = friendId;
-        this.friendStatusId = friendStatusId;
     }
 }

@@ -17,6 +17,7 @@ public class UserMapper {
 
     public static User mapToUser(UpdateUserRequest r) {
         return User.builder()
+                .id(r.getId())
                 .email(r.getEmail())
                 .login(r.getLogin())
                 .name(r.getName())

@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,28 +20,43 @@ public class FilmRowMapper implements RowMapper<Film> {
     private final RowMapper<Genre> genreRowMapper;
 
     @Override
-    public Film mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+    public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
     Film film = Film.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
-                .duration(rs.getLong("duration"))
+                .duration(rs.getInt("duration"))
                 .build();
 
-        Long mpaId = rs.getLong("mpa");
-        String mpaQuery = "SELECT name FROM mpa WHERE id = ?";
+        Integer mpaId = rs.getInt("mpa");
+        String mpaQuery = "SELECT name FROM mpas WHERE id = ?";
         String mpaName = jdbcTemplate.queryForObject(mpaQuery, String.class, mpaId);
         film.setMpa(new Mpa(mpaId, mpaName));
 
+        String sql = "SELECT fg.id as filmGenreId, g.id as id, g.name as name " +
+                "FROM film_genre fg " +
+                "JOIN genres g ON fg.genre_id = g.id " +
+                "WHERE fg.film_id = ?";
 
         Long filmId = film.getId();
-        String genreQuery = "SELECT g.name " +
-                            "FROM genre g " +
-                            "JOIN film_genre fg ON g.id = fg.genre_id " +
-                            "WHERE fg.film_id = ?;";
-        List<Genre> genres = jdbcTemplate.query(genreQuery, genreRowMapper, filmId);
-        film.setGenre(new HashSet<>(genres));
+        Map<Long, Genre> genres = jdbcTemplate.query(sql, new Object[]{filmId},  rs2 -> {
+            HashMap<Long, Genre> filmGenres = new HashMap<>();
+            while (rs2.next()) {
+                long filmGenreId = rs2.getLong("filmGenreId");
+                Genre genre = genreRowMapper.mapRow(rs2, rs2.getRow());
+                filmGenres.put(filmGenreId, genre);
+            }
+            return filmGenres;
+        });
+
+        Set<Genre> sortedGenres = genres.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        film.setGenres(sortedGenres);
 
         String likesQuery = "SELECT user_id " +
                 "FROM likes " +
