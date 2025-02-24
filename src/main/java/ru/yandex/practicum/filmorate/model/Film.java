@@ -4,8 +4,7 @@ import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Builder
@@ -15,7 +14,10 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private long duration;
+    private Integer duration;
+    private Mpa mpa;
+    @Builder.Default
+    private Set<Genre> genres = new LinkedHashSet<>();
     @Builder.Default
     private Set<Long> likes = new HashSet<>();
 

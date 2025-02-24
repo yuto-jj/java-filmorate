@@ -1,14 +1,11 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
-import lombok.*;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-@Builder
-@Jacksonized
-public class User {
+public class UpdateUserRequest {
     private Long id;
     private String email;
     private String login;

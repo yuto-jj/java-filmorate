@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -12,74 +15,35 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService {
 
-    private Long id = 0L;
     private final UserStorage userStorage;
 
     public Collection<User> getUsers() {
-        return userStorage.getUsers().values();
+        return userStorage.getUsers();
     }
 
-    public User createUser(User user) {
+    public User getUser(Long userId) {
+        return userStorage.getUser(userId);
+    }
+
+    public User createUser(NewUserRequest r) {
+        User user = UserMapper.mapToUser(r);
         validate(user);
-        id++;
-        user.setId(id);
-        log.debug("Установлен айди пользователя: {}", user.getId());
         userStorage.addUser(user);
         log.debug("Пользователь добавлен в список пользователей");
         return user;
     }
 
-    public User updateUser(User user) {
-        User oldUser = userStorage.getUser(user.getId());
+    public User updateUser(UpdateUserRequest r) {
+        User user = UserMapper.mapToUser(r);
         validate(user);
-
-        if (!user.getEmail().equals(oldUser.getEmail())) {
-            userStorage.removeEmail(oldUser.getEmail());
-            userStorage.addEmail(user.getEmail());
-        }
-
         userStorage.updateUser(user);
         return user;
-    }
-
-    public User addFriend(Long userId, Long friendId) {
-        User user1 = userStorage.getUser(userId);
-        User user2 = userStorage.getUser(friendId);
-        user1.addFriend(friendId);
-        user2.addFriend(userId);
-        return user1;
-    }
-
-    public User removeFriend(Long userId, Long friendId) {
-        User user1 = userStorage.getUser(userId);
-        User user2 = userStorage.getUser(friendId);
-        user1.removeFriend(friendId);
-        user2.removeFriend(userId);
-        return user1;
-    }
-
-    public Set<User> getFriends(Long userId) {
-        return userStorage.getUser(userId).getFriends()
-                .stream()
-                .map(userStorage::getUser)
-                .collect(Collectors.toSet());
-    }
-
-    public Set<User> getMutualFriends(Long userId, Long friendId) {
-        User user1 = userStorage.getUser(userId);
-        User user2 = userStorage.getUser(friendId);
-        return user1.getFriends()
-                .stream()
-                .filter(u -> user2.getFriends().contains(u))
-                .map(userStorage::getUser)
-                .collect(Collectors.toSet());
     }
 
     private void validate(User user) {
@@ -88,19 +52,20 @@ public class UserService {
 
         Matcher matcher1 = pattern.matcher(user.getEmail());
         if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().contains("@") ||
-        matcher1.find()) {
+                matcher1.find()) {
             log.error("Электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
         }
 
-        Map<Long, User> users = userStorage.getUsers();
-        User oldUser = users.get(user.getId());
+        User oldUser = null;
+        if (user.getId() != null) {
+            oldUser = userStorage.getUser(user.getId());
+        }
         if (userStorage.containsEmail(user.getEmail()) &&
                 (oldUser == null || !oldUser.getEmail().equals(user.getEmail()))) {
             log.error("Пользователь с таким емеил уже существует");
             throw new ValidationException("Пользователь с таким емеил уже существует");
         }
-        log.debug("Емеил пользователя добавлен в список");
 
         Matcher matcher2 = pattern.matcher(user.getLogin());
         if (user.getLogin() == null || user.getLogin().isEmpty() || matcher2.find()) {
