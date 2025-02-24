@@ -8,7 +8,6 @@ public class Friendship {
     @JsonIgnore
     private Long userId;
     private Long friendId;
-    private String friendStatus;
 
     public Friendship(Long userId, Long friendId) {
         this.userId = userId;

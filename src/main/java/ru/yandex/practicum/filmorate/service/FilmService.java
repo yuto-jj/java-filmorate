@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -62,12 +61,7 @@ public class FilmService {
     }
 
     public Set<Film> getTopTenFilms(int count) {
-        Comparator<Film> comparator = Comparator.comparing((Film film) -> film.getLikes().size()).reversed();
-        return filmStorage.getFilms()
-                .stream()
-                .sorted(comparator)
-                .limit(count)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return new LinkedHashSet<>(filmStorage.getTopFilms(count));
     }
 
     private void validateFilm(Film film) {

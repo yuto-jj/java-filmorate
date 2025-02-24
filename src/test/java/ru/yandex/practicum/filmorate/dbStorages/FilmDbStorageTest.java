@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -147,9 +148,12 @@ class FilmDbStorageTest {
         filmStorage.addFilm(film3);
         List<Film> films = filmStorage.getFilms();
         assertThat(films).hasSize(3);
-        assertThat(films).usingRecursiveFieldByFieldElementComparator().contains(film1);
-        assertThat(films).usingRecursiveFieldByFieldElementComparator().contains(film2);
-        assertThat(films).usingRecursiveFieldByFieldElementComparator().contains(film3);
+        Film filmFromList1 = films.get(0);
+        assertThat(filmFromList1).isEqualToComparingFieldByField(film1);
+        Film filmFromList2 = films.get(1);
+        assertThat(filmFromList2).isEqualToComparingFieldByField(film2);
+        Film filmFromList3 = films.get(2);
+        assertThat(filmFromList3).isEqualToComparingFieldByField(film3);
         filmStorage.deleteFilm(film3);
     }
 
@@ -171,5 +175,59 @@ class FilmDbStorageTest {
         filmStorage.removeLike(film1.getId(), user.getId());
         Film testFilm2 = filmStorage.getFilm(film1.getId());
         assertThat(testFilm2.getLikes().contains(user.getId())).isFalse();
+    }
+
+    @Test
+    @Order(6)
+    public void getTopFilmsTest() {
+        filmStorage.addFilm(film1);
+        filmStorage.addFilm(film2);
+        Film film3 = Film.builder()
+                .name("3 фильм")
+                .description("3 описание")
+                .releaseDate(LocalDate.of(1970, 2, 6))
+                .duration(98)
+                .mpa(new Mpa(5))
+                .genres(Set.of(new Genre(3)))
+                .build();
+        filmStorage.addFilm(film3);
+
+        User user = User.builder()
+                .name("ff")
+                .email("ff@mail.ru")
+                .birthday(LocalDate.of(2001, 12, 1))
+                .login("ff223")
+                .build();
+        userStorage.addUser(user);
+
+        User user2 = User.builder()
+                .name("aa")
+                .email("aa@mail.ru")
+                .birthday(LocalDate.of(2000, 11, 2))
+                .login("aa11")
+                .build();
+        userStorage.addUser(user2);
+
+        User user3 = User.builder()
+                .name("bb")
+                .email("bb@mail.ru")
+                .birthday(LocalDate.of(2002, 9, 3))
+                .login("ba11")
+                .build();
+        userStorage.addUser(user3);
+
+        filmStorage.addLike(film1.getId(), user.getId());
+        filmStorage.addLike(film1.getId(), user2.getId());
+        filmStorage.addLike(film1.getId(), user3.getId());
+
+        filmStorage.addLike(film3.getId(), user.getId());
+        filmStorage.addLike(film3.getId(), user2.getId());
+
+        List<Film> films = filmStorage.getTopFilms(2);
+        assertThat(films).hasSize(2);
+        Film filmFromList1 = films.get(0);
+        assertEquals(filmFromList1.getId(), film1.getId());
+        Film filmFromList2 = films.get(1);
+        assertEquals(filmFromList2.getId(), film3.getId());
     }
 }

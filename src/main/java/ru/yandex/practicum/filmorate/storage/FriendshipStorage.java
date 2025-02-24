@@ -13,5 +13,7 @@ public interface FriendshipStorage {
 
     Set<User> getFriends(Long userId);
 
+    Set<User> getMutualFriends(Long userId, Long friendId);
+
     void deleteFriendship(Long userId, Long friendId);
 }

@@ -22,12 +22,20 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
+    private static final String FIND_TOP_TEN_FILMS_QUERY = "SELECT f.id, f.name, f.description, f.release_date, " +
+            "f.duration, f.mpa, COUNT(l.user_id) AS likes_count FROM films f " +
+            "LEFT JOIN likes l ON f.id = l.film_id " +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa " +
+            "ORDER BY likes_count DESC LIMIT ?";
     private static final String INSERT_FILM_QUERY = "INSERT INTO films (name, description, release_date, " +
             "duration, mpa) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
             "duration = ?, mpa = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
-    private static final String INSERT_LIKE_QUERY = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
+    private static final String INSERT_LIKE_QUERY = "MERGE INTO likes AS target " +
+            "USING (VALUES (?, ?)) AS source (film_id, user_id) " +
+            "ON target.film_id = source.film_id AND target.user_id = source.user_id " +
+            "WHEN NOT MATCHED THEN INSERT (film_id, user_id) VALUES (source.film_id, source.user_id)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, GenreStorage genreStorage, MpaDbStorage mpaDbStorage) {
@@ -88,6 +96,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     public void deleteFilm(Film film) {
         delete(DELETE_QUERY, film.getId());
+    }
+
+    public List<Film> getTopFilms(int count) {
+        return findMany(FIND_TOP_TEN_FILMS_QUERY, count);
     }
 
     public void addLike(Long filmId, Long userId) {

@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,29 +33,12 @@ public class FilmRowMapper implements RowMapper<Film> {
         String mpaName = jdbcTemplate.queryForObject(mpaQuery, String.class, mpaId);
         film.setMpa(new Mpa(mpaId, mpaName));
 
-        String sql = "SELECT fg.id as filmGenreId, g.id as id, g.name as name " +
-                "FROM film_genre fg " +
+        String sql = "SELECT * FROM film_genre fg " +
                 "JOIN genres g ON fg.genre_id = g.id " +
                 "WHERE fg.film_id = ?";
-
         Long filmId = film.getId();
-        Map<Long, Genre> genres = jdbcTemplate.query(sql, new Object[]{filmId},  rs2 -> {
-            HashMap<Long, Genre> filmGenres = new HashMap<>();
-            while (rs2.next()) {
-                long filmGenreId = rs2.getLong("filmGenreId");
-                Genre genre = genreRowMapper.mapRow(rs2, rs2.getRow());
-                filmGenres.put(filmGenreId, genre);
-            }
-            return filmGenres;
-        });
-
-        Set<Genre> sortedGenres = genres.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        film.setGenres(sortedGenres);
+        List<Genre> genres = jdbcTemplate.query(sql, genreRowMapper, filmId);
+        film.setGenres(new HashSet<>(genres));
 
         String likesQuery = "SELECT user_id " +
                 "FROM likes " +

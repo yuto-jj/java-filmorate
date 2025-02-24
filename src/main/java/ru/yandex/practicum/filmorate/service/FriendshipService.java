@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dal.FriendshipDbStorage;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,11 +28,6 @@ public class FriendshipService {
     }
 
     public Set<User> getMutualFriends(Long userId, Long friendId) {
-        Set<User> userFriends = fsStorage.getFriends(userId);
-        Set<User> friendFriends = fsStorage.getFriends(friendId);
-        return userFriends
-                .stream()
-                .filter(friendFriends::contains)
-                .collect(Collectors.toSet());
+        return fsStorage.getMutualFriends(userId, friendId);
     }
 }

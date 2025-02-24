@@ -1,8 +1,3 @@
-INSERT INTO status (status)
-VALUES
-    ('подтверждённая'),
-    ('неподтверждённая');
-
 INSERT INTO genres (name)
 VALUES
     ('Комедия'),
